@@ -1,19 +1,5 @@
-const palavras = [
-  { palavra: "simbolo", dica: "Unidade básica de um alfabeto" },
-  { palavra: "alfabeto", dica: "Conjunto finito de símbolos" },
-  { palavra: "palavra", dica: "Sequência de símbolos de um alfabeto" },
-  { palavra: "conjunto", dica: "Coleção de elementos distintos" },
-  { palavra: "comprimento", dica: "Quantidade de símbolos em uma palavra" },
-  { palavra: "concatenacao de palavras", dica: "Junção de duas palavras" },
-  { palavra: "cadeias", dica: "Palavras formadas a partir de um alfabeto" },
-  { palavra: "automatos finitos", dica: "Modelos com número limitado de estados" },
-  { palavra: "automatos finitos deterministico", dica: "Autômato com transições únicas para cada entrada" },
-  { palavra: "união", dica: "Operação que combina dois conjuntos" },
-  { palavra: "concatenacao", dica: "Operação de juntar palavras" },
-  { palavra: "concatenacao sucessiva", dica: "Repetição contínua de palavras unidas" }
-];
+const palavrasRestantes = [];
 
-let palavrasRestantes = [...palavras];
 let palavraSecreta = "";
 let dicaAtual = "";
 let letrasCorretas = [];
@@ -135,13 +121,30 @@ function verificarLetra() {
 }
 
 function verificarFimDeJogo() {
-  const venceu = palavraSecreta.split("").every(letra =>
-    letra === " " || letrasCorretas.includes(letra)
-  );
+  const venceu = palavraSecreta
+    .split("")
+    .every(letra => letra === " " || letrasCorretas.includes(letra));
 
   if (venceu) {
     mensagemFinal.textContent = "🎉 Parabéns! Você venceu!";
-    finalizarJogo();
+
+    // Se ainda tiver palavra cadastrada, inicia a próxima
+    if (palavrasRestantes.length > 0) {
+      // desabilita input temporariamente
+      letraInput.disabled = true;
+      enviarBtn.disabled = true;
+
+      setTimeout(() => {
+        iniciarJogo();
+      }, 1500); // 1.5s de pausa para o jogador ver a mensagem
+
+    } else {
+      // não há mais palavras: fim definitivo
+      mensagemFinal.textContent = "✅ Você completou todas as palavras!";
+      finalizarJogo();
+      location.reload()
+    }
+
   } else if (tentativas === 0) {
     mensagemFinal.textContent = `💀 Você perdeu! A palavra era: ${palavraSecreta}`;
     atualizarPalavraNaTela();
@@ -157,35 +160,37 @@ function finalizarJogo() {
 
 function iniciarJogo() {
   if (palavrasRestantes.length === 0) {
-    mensagemFinal.textContent = "✅ Você completou todas as palavras disponíveis!";
+    mensagemFinal.textContent = "✅ Você completou todas as palavras!";
     letraInput.disabled = true;
     enviarBtn.disabled = true;
     reiniciarBtn.classList.add("hidden");
     return;
   }
 
+  // Pega próxima palavra
   const indice = Math.floor(Math.random() * palavrasRestantes.length);
-  const escolha = palavrasRestantes.splice(indice, 1)[0]; // Remove do array
-
+  const escolha = palavrasRestantes.splice(indice, 1)[0];
   palavraSecreta = escolha.palavra;
-  dicaAtual = escolha.dica;
+  dicaAtual     = escolha.dica;
 
+  // Zera estados
   letrasCorretas = [];
-  letrasErradas = [];
-  tentativas = 6;
+  letrasErradas  = [];
+  tentativas     = 6;
 
-  dicaEl.textContent = "Dica: " + dicaAtual;
-  tentativasEl.textContent = tentativas;
-  mensagemFinal.textContent = "";
-  letraInput.disabled = false;
-  enviarBtn.disabled = false;
+  // Atualiza UI
+  dicaEl.textContent          = "Dica: " + dicaAtual;
+  tentativasEl.textContent    = tentativas;
+  mensagemFinal.textContent   = "";
   reiniciarBtn.classList.add("hidden");
   gameDiv.classList.remove("hidden");
 
+  // *** REDESENHA SEMPRE ***
   desenharForcaBase();
   atualizarPalavraNaTela();
   letraInput.focus();
 }
+
 
 // Eventos
 startBtn.addEventListener("click", iniciarJogo);
@@ -193,7 +198,9 @@ enviarBtn.addEventListener("click", verificarLetra);
 letraInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") verificarLetra();
 });
-reiniciarBtn.addEventListener("click", iniciarJogo);
+reiniciarBtn.addEventListener("click", () => {
+  window.location.reload();
+});
 
 const novaPalavraInput = document.getElementById("nova-palavra");
 const novaDicaInput = document.getElementById("nova-dica");
