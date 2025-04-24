@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Jogo da Forca</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🎯 Jogo da Forca</h1>
+
+  <div class="container">
+    <div id="adicionar-palavra">
+      <h2>➕ Adicionar Palavra</h2>
+      <input type="text" id="nova-palavra" placeholder="Digite a nova palavra" />
+      <input type="text" id="nova-dica" placeholder="Digite a dica da palavra" />
+      <button id="adicionar-btn">Adicionar ao jogo</button>
+      <p id="mensagem-adicao" style="color: green;"></p>
+    </div>
+    
+    <button id="start-btn">Começar Jogo</button>
+
+    <div id="game" class="hidden">
+      <p id="dica">Dica: </p>
+      <canvas id="forca" width="200" height="250"></canvas>
+
+      <div id="palavra-secreta" class="espacos"></div>
+
+      <p>Tentativas restantes: <span id="tentativas">6</span></p>
+
+      <input type="text" id="letra" maxlength="1" placeholder="Digite uma letra" />
+      <button id="enviar-letra">Enviar</button>
+
+      <p id="mensagem-final"></p>
+      <button id="reiniciar" class="hidden">Jogar Novamente</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
